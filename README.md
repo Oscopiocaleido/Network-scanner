@@ -30,3 +30,8 @@ g++ code.cpp -o scanner
 
 # Ejecutar la herramienta
 ./scanner
+```
+## 💡 Nota de autor
+Como estudiante de tercer semestre de la carrera, todavía no he cursado las asignaturas avanzadas de redes o sistemas operativos. La lógica del Árbol Binario de Búsqueda (BST) y la arquitectura asimétrica del escáner son de mi autoría, aplicando lo aprendido en mis clases de Estructura de Datos.
+
+Sin embargo, para la implementación práctica de la conexión a internet, quiero aclarar el uso de **Gemini**, que usé como mi mentor interactivo. Gracias a la IA logré entender la teoría conceptual detrás de las conexiones TCP y descubrí qué librerías nativas de Linux en C (`<sys/socket.h>`, `<sys/select.h>`, etc.) necesitaba utilizar para que mis algoritmos pudieran interactuar con el mundo de las redes.
