@@ -1,8 +1,12 @@
+#include <asm-generic/socket.h>
+#include <bits/types/struct_timeval.h>
 #include <iostream>
 #include <netinet/in.h>
 #include <sys/socket.h> // It contains the main functions: socket() and connect()
 #include <arpa/inet.h>  // It contains the IP and port “mappers” and the “form”
 #include <unistd.h>     // It includes the close() function to free up memory
+#include <sys/select.h>
+#include <fcntl.h>
 
 using namespace std;
 
@@ -52,21 +56,45 @@ class BST{
     bool check(string ip, int port){
         int messenger = socket(AF_INET, SOCK_STREAM, 0);
 
+        int instructions = fcntl(messenger, F_GETFL, 0);
+        fcntl(messenger, F_SETFL, instructions | O_NONBLOCK);
+
         struct sockaddr_in form;
-
         form.sin_family = AF_INET;
-
         form.sin_port = htons(port);
-
         inet_pton(AF_INET, ip.c_str(), &form.sin_addr);
 
         int result = connect(messenger, (struct sockaddr*)&form, sizeof(form));
+        (void)result;
 
-        close(messenger);
+        fd_set notebook;
+        FD_ZERO(&notebook);
+        FD_SET(messenger, &notebook);
 
-        if(result == 0){
-            return true;
+        struct timeval clock;
+        clock.tv_sec = 1;
+        clock.tv_usec = 0;
+
+        int state_of_alert = select(messenger + 1, NULL, &notebook, NULL, &clock);
+
+        if(state_of_alert == 0){
+            close(messenger);
+            return false;
+        }else if (state_of_alert > 0){
+            int error = 0;
+            socklen_t len = sizeof(error); // socklen_t is a special data type for network sizes
+
+            getsockopt(messenger, SOL_SOCKET, SO_ERROR, &error, &len);
+
+            close(messenger);
+
+            if(error == 0){
+                return true;
+            }else{
+                return false;
+            }
         }else{
+            close(messenger);
             return false;
         }
     }
