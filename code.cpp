@@ -1,4 +1,8 @@
 #include <iostream>
+#include <netinet/in.h>
+#include <sys/socket.h> // It contains the main functions: socket() and connect()
+#include <arpa/inet.h>  // It contains the IP and port “mappers” and the “form”
+#include <unistd.h>     // It includes the close() function to free up memory
 
 using namespace std;
 
@@ -35,11 +39,36 @@ class BST{
         }
         return find(i -> r_child, v);
     }
-    void print(Node *&i){
+    void print(Node *&i, string ip){
         if(i == nullptr) return;
-        cout<< i -> p << " " <<endl;
-        print(i -> l_child);
-        print(i -> r_child);
+        if(checkPort(ip, i -> p) == true){
+            cout<< "[+] Port " << i -> p << " OPEN" <<endl;
+        }else{
+            cout<< "[-] Port " << i -> p << " CLOSE" <<endl;
+        }
+        print(i -> l_child, ip);
+        print(i -> r_child, ip);
+    }
+    bool check(string ip, int port){
+        int messenger = socket(AF_INET, SOCK_STREAM, 0);
+
+        struct sockaddr_in form;
+
+        form.sin_family = AF_INET;
+
+        form.sin_port = htons(port);
+
+        inet_pton(AF_INET, ip.c_str(), &form.sin_addr);
+
+        int result = connect(messenger, (struct sockaddr*)&form, sizeof(form));
+
+        close(messenger);
+
+        if(result == 0){
+            return true;
+        }else{
+            return false;
+        }
     }
     public:
     BST(){root = nullptr;}
@@ -49,7 +78,8 @@ class BST{
     Node *getRoot(){
         return root;
     }
-    void printPort(){print(root);}
+    void printPort(string ip){print(root, ip);}
+    bool checkPort(string ip, int port){return check(ip, port);}
 };
 
 void menu(){
@@ -64,7 +94,7 @@ void menu(){
         cout<< "#################################" <<endl;
         cout<< "###      Network scanner      ###" <<endl;
         cout<< "#################################" <<endl;
-        cout<< "[1] Scan the network and enter the IP address" <<endl;
+        cout<< "[1] Enter the Port" <<endl;
         cout<< "[2] Print IP addresses" <<endl;
         cout<< "[3] Exit" <<endl;
         cout<< "Option: ";
@@ -77,10 +107,14 @@ void menu(){
             cout<< "Added port!" <<endl;
         }
         if(n == 2){
+            string ip;
+            cout<< "Enter the IP address to scan: ";
+            cin >> ip;
+            cout<< endl;
             cout<< "#################################" <<endl;
             cout<< "###    Scanner scan order     ###" <<endl;
             cout<< "#################################" <<endl;
-            bst.printPort();
+            bst.printPort(ip);
         }
     }
 }
