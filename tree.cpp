@@ -35,6 +35,12 @@ class BST{
         }
         return find(i -> r_child, v);
     }
+    void print(Node *&i){
+        if(i == nullptr) return;
+        cout<< i -> p << " " <<endl;
+        print(i -> l_child);
+        print(i -> r_child);
+    }
     public:
     BST(){root = nullptr;}
     ~BST(){}
@@ -43,20 +49,39 @@ class BST{
     Node *getRoot(){
         return root;
     }
+    void printPort(){print(root);}
 };
 
 void menu(){
-    int n;
+    unsigned int n;
     n = 0;
+
+    BST bst;
+
     while(n != 3){
+        int port = 0;
+
         cout<< "#################################" <<endl;
         cout<< "###      Network scanner      ###" <<endl;
         cout<< "#################################" <<endl;
-        cout<< "[1] Create a tree" <<endl;
-        cout<< "[2] Scan the network and enter the IP address" <<endl;
+        cout<< "[1] Scan the network and enter the IP address" <<endl;
+        cout<< "[2] Print IP addresses" <<endl;
         cout<< "[3] Exit" <<endl;
+        cout<< "Option: ";
         cin >> n;
-        if(n == 1) BST bst;
+
+        if(n == 1){
+            cout<< "Enter the port number" <<endl;
+            cin >> port;
+            bst.insert(port);
+            cout<< "Added port!" <<endl;
+        }
+        if(n == 2){
+            cout<< "#################################" <<endl;
+            cout<< "###    Scanner scan order     ###" <<endl;
+            cout<< "#################################" <<endl;
+            bst.printPort();
+        }
     }
 }
 
