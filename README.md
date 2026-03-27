@@ -7,7 +7,7 @@ La mayoría de los escáneres de red básicos recorren los puertos de forma secu
 
 Para evadir este patrón, decidí estructurar los puertos objetivo dentro de un **Árbol Binario de Búsqueda (BST)**. Al realizar el escaneo utilizando un algoritmo de recorrido en **Pre-Orden** (Raíz -> Izquierda -> Derecha), el escáner "salta" matemáticamente a través del espectro de puertos. Esto genera un patrón asimétrico que difumina la huella del escaneo.
 
-## ⚙️ Bajo el capó: La función `check()`
+## ⚙️ La función `check()`
 El mayor reto técnico fue evitar que el programa se quedara "congelado" cuando un Firewall enemigo ignoraba nuestras peticiones (lo que se conoce como regla DROP). Para solucionarlo, la función `check` utiliza la API de Sockets de POSIX en Linux con una arquitectura táctica:
 
 1. **Sockets No-Bloqueantes:** Utilizo `fcntl()` para aplicar la bandera `O_NONBLOCK` al socket. Esto permite que el programa envíe la petición de conexión (`connect()`) y continúe su ejecución instantáneamente sin quedarse trabado esperando.
